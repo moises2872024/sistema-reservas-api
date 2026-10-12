@@ -1,31 +1,28 @@
 # Sistema de Reservas API
 
-API REST desarrollada con Node.js y Express para administrar servicios y reservas, con persistencia de datos en archivos JSON.
+**Repositorio en GitHub:** https://github.com/moises2872024/sistema-reservas-api
 
 ## 1. Descripción del proyecto
 
-**Sistema de Reservas API** es una API REST desarrollada con Node.js y Express que permite administrar servicios y reservas.
+Sistema de Reservas API es una API REST desarrollada con Node.js y Express para administrar servicios y reservas.
 
-La aplicación permite crear, consultar, actualizar y eliminar servicios, crear reservas y asociar servicios a una reserva. Los datos se almacenan en archivos JSON mediante el módulo File System (`fs`) de Node.js.
+La aplicación permite crear, consultar, actualizar y eliminar servicios, crear reservas y asociar servicios existentes a una reserva. Los datos se almacenan en archivos JSON mediante el módulo File System (`fs`) de Node.js.
 
 ## 2. Tecnologías utilizadas
 
-- **Node.js:** entorno de ejecución de JavaScript.
-- **Express:** framework para desarrollar la API REST.
-- **File System (`fs`):** módulo utilizado para leer y escribir archivos.
-- **JSON:** formato utilizado para almacenar los datos.
-- **Postman:** herramienta para probar los endpoints HTTP.
+- Node.js
+- Express
+- File System (`fs`) para la persistencia de datos
+- JSON para almacenar servicios y reservas
+- Postman para probar los endpoints HTTP
 
-## 3. Requisitos previos
+## 3. Instalación y ejecución
 
-Para ejecutar el proyecto necesitas:
+### Requisitos previos
 
-- Node.js instalado.
-- npm, incluido con Node.js.
-- Un editor de código, como Visual Studio Code.
-- Postman u otra herramienta para realizar solicitudes HTTP.
-
-## 4. Instalación y ejecución
+- Tener Node.js y npm instalados.
+- Contar con Git para clonar el repositorio.
+- Disponer de Postman u otra herramienta para realizar solicitudes HTTP.
 
 ### Clonar el repositorio
 
@@ -34,7 +31,7 @@ git clone https://github.com/moises2872024/sistema-reservas-api.git
 cd sistema-reservas-api
 ```
 
-### Instalar las dependencias
+### Instalar dependencias
 
 ```bash
 npm install
@@ -46,13 +43,21 @@ npm install
 npm run dev
 ```
 
-Cuando el servidor se inicie correctamente, estará disponible en:
+También se puede iniciar el servidor con:
+
+```bash
+npm start
+```
+
+Por defecto, el servidor estará disponible en:
 
 `http://localhost:3000`
 
-## 5. Estructura del proyecto
+El puerto se puede configurar mediante la variable de entorno `PORT`. Si no se define, se utiliza el puerto 3000.
 
-```
+## 4. Estructura del proyecto
+
+```text
 sistema-reservas-api/
 ├── src/
 │   ├── app.js
@@ -74,40 +79,39 @@ sistema-reservas-api/
 └── README.md
 ```
 
-### Descripción de los archivos principales
+### Responsabilidad de los archivos
 
-- `src/app.js`: configura Express, el middleware JSON, las rutas y el manejo de errores.
+- `src/app.js`: configura Express, los middlewares, las rutas y el manejo de errores.
 - `src/server.js`: inicia el servidor HTTP.
-- `src/config/env.config.js`: configura el puerto del servidor.
-- `src/managers/ServiceManager.js`: contiene la lógica de administración de servicios y su persistencia.
-- `src/managers/BookingManager.js`: contiene la lógica de creación y consulta de reservas, y de asociación de servicios.
-- `src/routes/services.router.js`: define los endpoints de servicios y sus validaciones.
-- `src/routes/bookings.router.js`: define los endpoints de reservas y la asociación de servicios.
+- `src/config/env.config.js`: define la configuración del puerto.
+- `src/managers/ServiceManager.js`: administra los servicios y la lectura y escritura de `services.json`.
+- `src/managers/BookingManager.js`: administra las reservas, la asociación de servicios y la persistencia en `bookings.json`.
+- `src/routes/services.router.js`: define las rutas HTTP para gestionar servicios y validar los datos recibidos.
+- `src/routes/bookings.router.js`: define las rutas HTTP para gestionar reservas y asociar servicios.
 - `src/data/services.json`: almacena los servicios.
-- `src/data/bookings.json`: almacena las reservas.
-- `package.json`: define los scripts y las dependencias del proyecto.
+- `src/data/bookings.json`: almacena las reservas y las referencias a sus servicios.
+- `package.json`: contiene las dependencias y los scripts de ejecución.
+- `.gitignore`: excluye archivos y carpetas que no deben incluirse en el control de versiones.
 
-## 6. Endpoints de servicios
+## 5. Gestión de servicios
 
-La ruta base es:
+La ruta base es `/api/services`.
 
-`/api/services`
-
-| Método HTTP | Endpoint | Descripción |
+| Método | Endpoint | Función |
 |---|---|---|
-| GET | `/api/services` | Obtiene todos los servicios. |
-| GET | `/api/services/:id` | Obtiene un servicio por su ID. |
-| POST | `/api/services` | Crea un servicio. |
+| GET | `/api/services` | Lista todos los servicios. |
+| GET | `/api/services/:id` | Consulta un servicio por su ID. |
+| POST | `/api/services` | Crea un servicio con ID automático. |
 | PUT | `/api/services/:id` | Actualiza un servicio existente. |
 | DELETE | `/api/services/:id` | Elimina un servicio. |
 
-### Crear un servicio
+### Ejemplo: crear un servicio
 
-**Solicitud:**
+Solicitud:
 
 `POST http://localhost:3000/api/services`
 
-En Postman, selecciona `Body → raw → JSON` e introduce:
+Body en Postman: `raw` → `JSON`.
 
 ```json
 {
@@ -120,72 +124,34 @@ En Postman, selecciona `Body → raw → JSON` e introduce:
 }
 ```
 
-**Respuesta esperada:** `201 Created`.
+La API genera automáticamente el identificador del servicio y guarda el registro en `src/data/services.json`.
 
-El servicio recibe un identificador generado automáticamente.
+### Validaciones de servicios
 
-### Consultar servicios
+- El nombre, la descripción y la categoría deben ser textos no vacíos.
+- La duración debe ser un número entero mayor que cero.
+- El precio debe ser un número mayor o igual a cero.
+- La disponibilidad debe ser un valor booleano.
+- El identificador se genera automáticamente al crear el servicio.
+- Las actualizaciones deben incluir todos los campos requeridos.
 
-**Solicitud:**
+## 6. Gestión de reservas
 
-`GET http://localhost:3000/api/services`
+La ruta base es `/api/bookings`.
 
-Devuelve una lista de los servicios registrados.
-
-### Consultar un servicio por ID
-
-**Solicitud:**
-
-`GET http://localhost:3000/api/services/ID_DEL_SERVICIO`
-
-Reemplaza `ID_DEL_SERVICIO` por el identificador real del servicio.
-
-### Actualizar un servicio
-
-**Solicitud:**
-
-`PUT http://localhost:3000/api/services/ID_DEL_SERVICIO`
-
-La solicitud debe incluir todos los campos del servicio:
-
-```json
-{
-  "name": "Corte de cabello actualizado",
-  "description": "Corte tradicional actualizado",
-  "duration": 35,
-  "price": 9000,
-  "category": "Peluquería",
-  "available": true
-}
-```
-
-### Eliminar un servicio
-
-**Solicitud:**
-
-`DELETE http://localhost:3000/api/services/ID_DEL_SERVICIO`
-
-Elimina el servicio correspondiente al identificador indicado.
-
-## 7. Endpoints de reservas
-
-La ruta base es:
-
-`/api/bookings`
-
-| Método HTTP | Endpoint | Descripción |
+| Método | Endpoint | Función |
 |---|---|---|
 | POST | `/api/bookings` | Crea una reserva. |
 | GET | `/api/bookings/:bid` | Consulta una reserva por su ID. |
-| POST | `/api/bookings/:bid/services/:sid` | Agrega un servicio a una reserva. |
+| POST | `/api/bookings/:bid/services/:sid` | Agrega un servicio existente a una reserva. |
 
-### Crear una reserva
+### Ejemplo: crear una reserva
 
-**Solicitud:**
+Solicitud:
 
 `POST http://localhost:3000/api/bookings`
 
-En Postman, selecciona `Body → raw → JSON` e introduce:
+Body en Postman: `raw` → `JSON`.
 
 ```json
 {
@@ -197,88 +163,123 @@ En Postman, selecciona `Body → raw → JSON` e introduce:
 }
 ```
 
-**Respuesta esperada:** `201 Created`.
-
-La reserva recibe un ID generado automáticamente y comienza con una lista de servicios vacía.
+La API crea la reserva con un identificador automático y una lista de servicios inicialmente vacía.
 
 ### Consultar una reserva
 
-**Solicitud:**
+Solicitud:
 
 `GET http://localhost:3000/api/bookings/ID_DE_LA_RESERVA`
 
-Reemplaza `ID_DE_LA_RESERVA` por el identificador real de la reserva.
+Se debe reemplazar `ID_DE_LA_RESERVA` por el identificador real.
 
 ### Agregar un servicio a una reserva
 
-**Solicitud:**
+Solicitud:
 
 `POST http://localhost:3000/api/bookings/ID_DE_LA_RESERVA/services/ID_DEL_SERVICIO`
 
-Reemplaza ambos identificadores por los valores reales. Esta operación no requiere un cuerpo JSON.
+Se deben reemplazar ambos identificadores por los valores reales. Esta operación no requiere un cuerpo JSON.
 
-El servicio debe existir y estar disponible. Si ya está asociado a la reserva, se incrementa su cantidad.
+El servicio debe existir y estar disponible para poder asociarse a la reserva.
 
-## 8. Validaciones y manejo de errores
+## 7. Relación entre reservas y servicios
 
-La API valida los datos antes de guardar la información.
+La reserva no almacena el objeto completo del servicio. Guarda únicamente su identificador y la cantidad asociada.
 
-### Validaciones de servicios
+Ejemplo de la propiedad `services` de una reserva:
 
-- El nombre, la descripción y la categoría deben ser textos no vacíos.
-- La duración debe ser un número entero mayor que cero.
-- El precio debe ser un número mayor o igual a cero.
-- La disponibilidad debe ser un valor booleano.
-- No se permite enviar un ID manual al crear o actualizar un servicio.
-- En las actualizaciones se requieren todos los campos definidos del servicio.
+```json
+{
+  "services": [
+    {
+      "service": "804f79b1-a0a4-4d7e-a64a-04441fd08532",
+      "quantity": 2
+    }
+  ]
+}
+```
 
-### Validaciones de reservas
+En este ejemplo, el valor de `service` corresponde al ID de un servicio registrado en `services.json`, mientras que `quantity` indica cuántas veces se ha agregado ese servicio a la reserva.
 
-- El nombre del cliente no puede estar vacío.
-- El correo electrónico debe tener un formato válido.
-- La fecha debe ser una fecha de calendario válida en formato `YYYY-MM-DD`.
-- La hora debe tener formato `HH:mm`.
-- Si se proporciona el estado, no puede ser un texto vacío.
-- Los servicios y las reservas deben existir para poder asociarlos.
+### Comportamiento de la asociación
 
-### Códigos HTTP utilizados
+- Si el servicio todavía no está en la reserva, se agrega con `quantity: 1`.
+- Si el servicio ya está asociado, su cantidad se incrementa en una unidad.
+- Si la reserva o el servicio no existen, la operación se rechaza.
+- Si el servicio no está disponible, la operación se rechaza.
+
+Esta estructura evita duplicar el objeto completo del servicio dentro de la reserva y permite identificarlo mediante su ID.
+
+## 8. Persistencia con File System
+
+La aplicación utiliza el módulo `fs` de Node.js para leer y escribir archivos JSON.
+
+- `src/data/services.json`: almacena los servicios.
+- `src/data/bookings.json`: almacena las reservas y sus servicios asociados.
+
+Los managers se encargan de leer los datos, realizar las modificaciones y escribir los resultados en los archivos correspondientes.
+
+La información permanece almacenada después de detener y volver a iniciar el servidor, siempre que los archivos se conserven.
+
+### Comprobación de persistencia
+
+1. Crear un servicio o una reserva desde Postman.
+2. Revisar el archivo JSON correspondiente en VS Code.
+3. Detener el servidor.
+4. Volver a ejecutar `npm run dev`.
+5. Consultar nuevamente el recurso mediante Postman.
+6. Verificar que los datos continúen disponibles.
+
+## 9. Validaciones y manejo de errores
+
+La API valida los datos antes de procesarlos.
+
+En los servicios, se comprueban los campos obligatorios, los tipos de datos, la duración, el precio y la disponibilidad.
+
+En las reservas, se validan el nombre del cliente, el formato del correo electrónico, la fecha, la hora y los campos permitidos.
+
+La asociación entre reservas y servicios verifica que ambos recursos existan y que el servicio esté disponible.
+
+### Códigos HTTP
 
 - `200 OK`: solicitud procesada correctamente.
 - `201 Created`: recurso creado correctamente.
-- `400 Bad Request`: datos de entrada inválidos.
-- `404 Not Found`: recurso no encontrado.
-- `409 Conflict`: servicio no disponible para la operación.
+- `400 Bad Request`: datos inválidos.
+- `404 Not Found`: recurso inexistente.
+- `409 Conflict`: conflicto relacionado con la disponibilidad del servicio.
 - `500 Internal Server Error`: error interno del servidor.
 
-Los errores de validación incluyen un estado de error, un mensaje descriptivo y, cuando corresponde, una lista de errores específicos.
+## 10. Pruebas realizadas con Postman
 
-## 9. Persistencia de datos
+Las rutas se pueden comprobar con Postman utilizando la dirección base `http://localhost:3000`.
 
-Los datos se almacenan localmente en archivos JSON:
+Las pruebas recomendadas incluyen:
 
-- `src/data/services.json`
-- `src/data/bookings.json`
+- Listar servicios y consultar un servicio por ID.
+- Crear, actualizar y eliminar servicios.
+- Crear una reserva y consultarla por ID.
+- Agregar un servicio a una reserva.
+- Agregar nuevamente el mismo servicio y comprobar el incremento de `quantity`.
+- Intentar enviar datos inválidos.
+- Reiniciar el servidor y comprobar la persistencia de los datos.
 
-Los cambios se escriben en estos archivos, por lo que los datos pueden conservarse después de reiniciar el servidor.
+## 11. Relación con los criterios de evaluación
 
-Este mecanismo de persistencia está pensado para un proyecto de aprendizaje y no sustituye una base de datos para un entorno de producción.
+| Criterio | Implementación |
+|---|---|
+| Configuración del servidor y estructura (20 %) | Servidor Express, rutas separadas, configuración, scripts y documentación. |
+| Gestión de servicios (25 %) | Operaciones CRUD, generación automática de ID y almacenamiento en `services.json`. |
+| Gestión de reservas (20 %) | Creación, consulta por ID y asociación de servicios existentes. |
+| Persistencia con FileSystem (20 %) | Lectura y escritura de archivos JSON para conservar los datos. |
+| Relación reservas-servicios (15 %) | Referencia por ID, cantidad `quantity` e incremento de cantidad al repetir un servicio. |
 
-## 10. Pruebas con Postman
+## 12. Autor y repositorio
 
-Para probar la API:
+**Proyecto:** Sistema de Reservas API
 
-1. Inicia el servidor con `npm run dev`.
-2. Abre Postman.
-3. Utiliza la dirección base `http://localhost:3000`.
-4. Selecciona el método HTTP correspondiente.
-5. Para las solicitudes POST y PUT, configura `Body → raw → JSON` cuando corresponda.
-6. Comprueba el código de estado y el contenido de la respuesta.
-7. Revisa los archivos JSON para verificar la persistencia de los datos.
+**Repositorio:** https://github.com/moises2872024/sistema-reservas-api
 
-Se recomienda probar las operaciones de consulta, creación, actualización, eliminación, validación de datos y asociación de servicios a reservas.
+**Tecnologías principales:** Node.js, Express y File System.
 
-## 11. Autor
-
-Proyecto académico: Sistema de Reservas API.
-
-Desarrollado con Node.js y Express.
+Proyecto académico para la gestión de servicios y reservas mediante una API REST.
