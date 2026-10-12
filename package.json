@@ -1,0 +1,22 @@
+{
+  "name": "sistema-reservas-api",
+  "version": "1.0.0",
+  "description": "API REST de servicios y reservas con Node.js, Express y persistencia en archivos JSON",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "api-rest",
+    "reservas",
+    "filesystem"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "804f79b1-a0a4-4d7e-a64a-04441fd08532",
+    "name": "Corte de cabello",
+    "description": "Corte de cabello tradicional",
+    "duration": 30,
+    "price": 8000,
+    "category": "Peluquería",
+    "available": true
+  }
+]
