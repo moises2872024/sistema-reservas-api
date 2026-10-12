@@ -1,5 +1,7 @@
 # Sistema de Reservas API
 
+API REST desarrollada con Node.js y Express para administrar servicios y reservas, con persistencia de datos en archivos JSON.
+
 ## 1. Descripción del proyecto
 
 **Sistema de Reservas API** es una API REST desarrollada con Node.js y Express que permite administrar servicios y reservas.
@@ -25,11 +27,10 @@ Para ejecutar el proyecto necesitas:
 
 ## 4. Instalación y ejecución
 
-### Clonar o descargar el proyecto
-
-Abre una terminal en la carpeta raíz del proyecto:
+### Clonar el repositorio
 
 ```bash
+git clone https://github.com/moises2872024/sistema-reservas-api.git
 cd sistema-reservas-api
 ```
 
@@ -43,12 +44,6 @@ npm install
 
 ```bash
 npm run dev
-```
-
-### Ejecutar en modo normal
-
-```bash
-npm start
 ```
 
 Cuando el servidor se inicie correctamente, estará disponible en:
